@@ -50,11 +50,6 @@ namespace API_Biblioteca.Controllers
         [HttpPut("{isbn}")]
         public async Task<ActionResult<Libro>> UpdateLibro(string isbn, Libro libro)
         {
-            if (isbn != libro.Isbn)
-            {
-                return BadRequest("ISBN no coincide");
-            }
-
             var libroActualizado = await _bibliotecaService.UpdateLibroAsync(isbn, libro);
             if (libroActualizado == null)
             {
