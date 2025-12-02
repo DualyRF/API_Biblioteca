@@ -63,31 +63,27 @@ namespace API_Biblioteca.Services
         }
 
         // ========== EMPLEADOS ==========
-        public async Task<List<Usuario>> GetEmpleadosAsync()
+        public async Task<List<Usuario>> GetUsuariosAsync()
         {
             return await _context.Usuarios
-                .Where(u => u.Tipo != "Socio" && u.Activo)
                 .OrderBy(u => u.Nombre)
                 .ToListAsync();
         }
 
-        public async Task<Usuario?> GetEmpleadoByIdAsync(int id)
+        public async Task<Usuario?> GetUsuarioByIdAsync(int id)
         {
             return await _context.Usuarios
-                .FirstOrDefaultAsync(u => u.Id == id && u.Tipo != "Socio" && u.Activo);
+                .FirstOrDefaultAsync(u => u.Id == id);
         }
 
-        public async Task<Usuario> CreateEmpleadoAsync(Usuario empleado)
+        public async Task<Usuario> CreateUsuarioAsync(Usuario empleado)
         {
-            empleado.Tipo = empleado.Tipo; // Administrador o Bibliotecario
-            empleado.Activo = true;
-
             _context.Usuarios.Add(empleado);
             await _context.SaveChangesAsync();
             return empleado;
         }
 
-        public async Task<Usuario?> UpdateEmpleadoAsync(int id, Usuario empleado)
+        public async Task<Usuario?> UpdateUsuarioAsync(int id, Usuario empleado)
         {
             var empleadoExistente = await _context.Usuarios.FindAsync(id);
             if (empleadoExistente == null)
@@ -120,7 +116,7 @@ namespace API_Biblioteca.Services
         public async Task<List<Usuario>> GetSociosAsync()
         {
             return await _context.Usuarios
-                .Where(u => u.Tipo == "Socio" && u.Activo)
+                .Where(u => u.Tipo == "Socio" && u.Activo == 1)
                 .OrderBy(u => u.Nombre)
                 .ToListAsync();
         }
@@ -128,13 +124,13 @@ namespace API_Biblioteca.Services
         public async Task<Usuario?> GetSocioByIdAsync(int id)
         {
             return await _context.Usuarios
-                .FirstOrDefaultAsync(u => u.Id == id && u.Tipo == "Socio" && u.Activo);
+                .FirstOrDefaultAsync(u => u.Id == id && u.Tipo == "Socio" && u.Activo == 1);
         }
 
         public async Task<Usuario> CreateSocioAsync(Usuario socio)
         {
             socio.Tipo = "Socio";
-            socio.Activo = true;
+            socio.Activo = 1;
 
             _context.Usuarios.Add(socio);
             await _context.SaveChangesAsync();
@@ -147,7 +143,6 @@ namespace API_Biblioteca.Services
             return await _context.Prestamos
                 .Include(p => p.Libro)
                 .Include(p => p.Usuario)
-                .Include(p => p.Empleado)
                 .OrderByDescending(p => p.FechaPrestamo)
                 .ToListAsync();
         }
@@ -157,7 +152,6 @@ namespace API_Biblioteca.Services
             return await _context.Prestamos
                 .Include(p => p.Libro)
                 .Include(p => p.Usuario)
-                .Include(p => p.Empleado)
                 .FirstOrDefaultAsync(p => p.Id == id);
         }
 
@@ -170,13 +164,13 @@ namespace API_Biblioteca.Services
 
             // Verificar que el socio existe
             var socio = await _context.Usuarios
-                .FirstOrDefaultAsync(u => u.Id == prestamoRequest.UsuarioId && u.Tipo == "Socio" && u.Activo);
+                .FirstOrDefaultAsync(u => u.Id == prestamoRequest.UsuarioId && u.Tipo == "Socio" && u.Activo == 1);
             if (socio == null)
                 throw new Exception("Socio no válido");
 
             // Verificar que el empleado existe
             var empleado = await _context.Usuarios
-                .FirstOrDefaultAsync(u => u.Id == prestamoRequest.EmpleadoId && u.Tipo != "Socio" && u.Activo);
+                .FirstOrDefaultAsync(u => u.Id == prestamoRequest.EmpleadoId && u.Tipo != "Socio" && u.Activo == 1);
             if (empleado == null)
                 throw new Exception("Empleado no válido");
 
@@ -184,11 +178,9 @@ namespace API_Biblioteca.Services
             {
                 LibroIsbn = prestamoRequest.LibroIsbn,
                 UsuarioId = prestamoRequest.UsuarioId,
-                EmpleadoId = prestamoRequest.EmpleadoId,
                 FechaPrestamo = prestamoRequest.FechaPrestamo,
                 FechaDevolucion = prestamoRequest.FechaDevolucion,
-                Estado = "Activo",
-                FechaRegistro = DateTime.UtcNow
+                Estado = "Activo"
             };
 
             // Actualizar estado del libro
@@ -232,10 +224,10 @@ namespace API_Biblioteca.Services
         public async Task<List<Usuario>> BuscarSociosAsync(string criterio)
         {
             return await _context.Usuarios
-                .Where(u => u.Tipo == "Socio" && u.Activo &&
+                .Where(u => u.Tipo == "Socio" && u.Activo == 1 &&
                            (u.Nombre.Contains(criterio) ||
                             u.Apellido.Contains(criterio) ||
-                            u.Curp.Contains(criterio)))
+                            u.CURP.Contains(criterio)))
                 .OrderBy(u => u.Nombre)
                 .ToListAsync();
         }

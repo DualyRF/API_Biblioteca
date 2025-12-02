@@ -36,12 +36,5 @@ namespace API_Biblioteca.Controllers
 
             return Ok(result);
         }
-
-        [HttpGet("validate/{usuarioId}")]
-        public async Task<ActionResult<bool>> ValidarUsuario(int usuarioId)
-        {
-            var isValid = await _authService.ValidarUsuarioAsync(usuarioId);
-            return Ok(isValid);
-        }
     }
 }

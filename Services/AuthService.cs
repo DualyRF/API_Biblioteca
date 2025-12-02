@@ -19,11 +19,9 @@ namespace API_Biblioteca.Services
         {
             try
             {
-                // Buscar usuario por username (solo empleados tienen username)
+                // Buscar usuario por username
                 var usuario = await _context.Usuarios
-                    .Where(u => u.Username == username &&
-                               u.Tipo != "Socio" &&
-                               u.Activo)
+                    .Where(u => u.Username == username && u.Activo == 1)
                     .FirstOrDefaultAsync();
 
                 if (usuario == null)
@@ -35,7 +33,6 @@ namespace API_Biblioteca.Services
                     };
                 }
 
-                // Verificar contraseña (hash MD5 simple para el ejemplo)
                 if (usuario.Password != password)
                 {
                     return new LoginResponse
@@ -57,7 +54,7 @@ namespace API_Biblioteca.Services
                         Nombre = usuario.Nombre,
                         Apellido = usuario.Apellido,
                         Tipo = usuario.Tipo,
-                        Email = usuario.Email ?? ""
+                        Email = usuario.Email
                     },
                     Token = GenerateSimpleToken(usuario.Id)
                 };
@@ -69,28 +66,6 @@ namespace API_Biblioteca.Services
                     Success = false,
                     Message = $"Error: {ex.Message}"
                 };
-            }
-        }
-
-        public async Task<bool> ValidarUsuarioAsync(int usuarioId)
-        {
-            return await _context.Usuarios
-                .AnyAsync(u => u.Id == usuarioId && u.Activo);
-        }
-
-        public async Task<Usuario?> GetUsuarioByUsernameAsync(string username)
-        {
-            return await _context.Usuarios
-                .FirstOrDefaultAsync(u => u.Username == username && u.Activo);
-        }
-
-        private string CreateMD5Hash(string input)
-        {
-            using (System.Security.Cryptography.MD5 md5 = System.Security.Cryptography.MD5.Create())
-            {
-                byte[] inputBytes = System.Text.Encoding.ASCII.GetBytes(input);
-                byte[] hashBytes = md5.ComputeHash(inputBytes);
-                return Convert.ToHexString(hashBytes).ToLower();
             }
         }
 

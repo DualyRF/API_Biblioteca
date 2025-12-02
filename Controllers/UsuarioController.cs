@@ -6,27 +6,29 @@ namespace API_Biblioteca.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class EmpleadosController : ControllerBase
+    public class UsuarioController : ControllerBase
     {
         private readonly IBibliotecaService _bibliotecaService;
 
 
-        public EmpleadosController(IBibliotecaService bibliotecaService)
+        public UsuarioController(IBibliotecaService bibliotecaService)
         {
             _bibliotecaService = bibliotecaService;
         }
 
+        // Toma todos los usuarios de la base de datos
         [HttpGet]
-        public async Task<ActionResult<List<Usuario>>> GetEmpleados()
+        public async Task<ActionResult<List<Usuario>>> GetUsuarios()
         {
-            var empleados = await _bibliotecaService.GetEmpleadosAsync();
+            var empleados = await _bibliotecaService.GetUsuariosAsync();
             return Ok(empleados);
         }
 
+        // Toma un usuario por su ID
         [HttpGet("{id}")]
-        public async Task<ActionResult<Usuario>> GetEmpleado(int id)
+        public async Task<ActionResult<Usuario>> GetUsuario(int id)
         {
-            var empleado = await _bibliotecaService.GetEmpleadoByIdAsync(id);
+            var empleado = await _bibliotecaService.GetUsuarioByIdAsync(id);
             if (empleado == null)
             {
                 return NotFound($"Empleado con ID {id} no encontrado");
@@ -35,25 +37,26 @@ namespace API_Biblioteca.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<Usuario>> CreateEmpleado(Usuario request)
+        public async Task<ActionResult<Usuario>> CreateUsuario(Usuario request)
         {
             try
             {
-                var empleado = new Usuario
+                // Crea un nuevo usuario basado en el request recibido
+                var usuario = new Usuario
                 {
                     Username = request.Username,
                     Password = request.Password,
                     Nombre = request.Nombre,
                     Apellido = request.Apellido,
                     Tipo = request.Tipo,
-                    Curp = request.Curp,
+                    CURP = request.CURP,
                     Email = request.Email,
-                    Telefono = request.Telefono,
-                    Activo = true
+                    Telefono = request.Telefono
                 };
 
-                var nuevoEmpleado = await _bibliotecaService.CreateEmpleadoAsync(empleado);
-                return CreatedAtAction(nameof(GetEmpleado), new { id = nuevoEmpleado.Id }, nuevoEmpleado);
+                // Llama al servicio para crear el usuario
+                var nuevoUsuario = await _bibliotecaService.CreateUsuarioAsync(usuario);
+                return CreatedAtAction(nameof(GetUsuario), new { id = nuevoUsuario.Id }, nuevoUsuario);
             }
             catch (Exception ex)
             {
@@ -62,9 +65,9 @@ namespace API_Biblioteca.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<ActionResult<Usuario>> UpdateEmpleado(int id, Usuario empleado)
+        public async Task<ActionResult<Usuario>> UpdateUsuario(int id, Usuario empleado)
         {
-            var empleadoActualizado = await _bibliotecaService.UpdateEmpleadoAsync(id, empleado);
+            var empleadoActualizado = await _bibliotecaService.UpdateUsuarioAsync(id, empleado);
             if (empleadoActualizado == null)
             {
                 return NotFound($"Empleado con ID {id} no encontrado");

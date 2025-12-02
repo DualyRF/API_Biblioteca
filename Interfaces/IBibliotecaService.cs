@@ -13,10 +13,10 @@ namespace API_Biblioteca.Interfaces
         Task<bool> DeleteLibroAsync(string isbn);
 
         // Empleados
-        Task<List<Usuario>> GetEmpleadosAsync();
-        Task<Usuario?> GetEmpleadoByIdAsync(int id);
-        Task<Usuario> CreateEmpleadoAsync(Usuario empleado);
-        Task<Usuario?> UpdateEmpleadoAsync(int id, Usuario empleado);
+        Task<List<Usuario>> GetUsuariosAsync();
+        Task<Usuario?> GetUsuarioByIdAsync(int id);
+        Task<Usuario> CreateUsuarioAsync(Usuario empleado);
+        Task<Usuario?> UpdateUsuarioAsync(int id, Usuario empleado);
         Task<bool> DeleteEmpleadoAsync(int id);
 
         // Socios

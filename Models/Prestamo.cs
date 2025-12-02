@@ -6,39 +6,36 @@ namespace API_Biblioteca.Models
     public class Prestamo
     {
         [Key]
+        [Column ("id")]
         public int Id { get; set; }
 
         [Required]
-        [StringLength(20)]
+        [Column ("libroIsbn")]
         public string LibroIsbn { get; set; } = string.Empty;
 
         [Required]
+        [Column ("usuarioId")]
         public int UsuarioId { get; set; }
 
         [Required]
-        public int EmpleadoId { get; set; }
-
-        [Required]
+        [Column ("fechaPrestamo")]
         public DateTime FechaPrestamo { get; set; }
 
         [Required]
+        [Column ("fechaDevolucion")]
         public DateTime FechaDevolucion { get; set; }
 
-        public DateTime? FechaDevolucionReal { get; set; }
+        [Column ("fechaDevolucionReal")]
+        public DateTime? FechaDevolucionReal { get; set; } // Puede ser nulo si no se ha devuelto el libro aún
 
         [Required]
-        [StringLength(20)]
-        public string Estado { get; set; } = "Activo";
+        [Column ("estado")]
+        public string Estado { get; set; } = "Activo"; // Por defecto es Activo
 
-        public DateTime FechaRegistro { get; set; } = DateTime.UtcNow;
-
-        [ForeignKey("LibroIsbn")]
+        [ForeignKey("libroIsbn")]
         public virtual Libro Libro { get; set; } = null!;
 
-        [ForeignKey("UsuarioId")]
+        [ForeignKey("usuarioId")]
         public virtual Usuario Usuario { get; set; } = null!;
-
-        [ForeignKey("EmpleadoId")]
-        public virtual Usuario Empleado { get; set; } = null!;
     }
 }
