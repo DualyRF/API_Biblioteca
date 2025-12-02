@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using API_Biblioteca.Models;
+using API_Biblioteca.DTOs;
 
 namespace API_Biblioteca.Data
 {
@@ -9,7 +10,8 @@ namespace API_Biblioteca.Data
 
         public DbSet<Usuario> Usuarios { get; set; }
         public DbSet<Libro> Libros { get; set; }
-        public DbSet<Prestamo> Prestamos { get; set; }
+        public DbSet<PrestamoRequest> Prestamos { get; set; }
+        public DbSet<Prestamo> Prestamo { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

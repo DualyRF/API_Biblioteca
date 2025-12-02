@@ -116,22 +116,23 @@ namespace API_Biblioteca.Services
         // ========== Prestamo ==========
         public async Task<List<Prestamo>> GetPrestamosAsync()
         {
-            return await _context.Prestamos
+            return await _context.Prestamo
                 .Include(p => p.Libro)
                 .Include(p => p.Usuario)
                 .OrderByDescending(p => p.FechaPrestamo)
                 .ToListAsync();
         }
+        
 
         public async Task<Prestamo?> GetPrestamoByIdAsync(int id)
         {
-            return await _context.Prestamos
+            return await _context.Prestamo
                 .Include(p => p.Libro)
                 .Include(p => p.Usuario)
                 .FirstOrDefaultAsync(p => p.Id == id);
         }
 
-        public async Task<Prestamo> CreatePrestamoAsync(PrestamoRequest prestamoRequest)
+        public async Task<PrestamoRequest> CreatePrestamoAsync(PrestamoRequest prestamoRequest)
         {
             // Verificar que el libro existe y está disponible
             var libro = await _context.Libros.FindAsync(prestamoRequest.LibroIsbn);
@@ -144,30 +145,24 @@ namespace API_Biblioteca.Services
             if (socio == null)
                 throw new Exception("Socio no válido");
 
-            // Verificar que el empleado existe
-            var empleado = await _context.Usuarios
-                .FirstOrDefaultAsync(u => u.Id == prestamoRequest.EmpleadoId && u.Tipo != "Socio" && u.Activo == 1);
-            if (empleado == null)
-                throw new Exception("Empleado no válido");
-
-            var prestamo = new Prestamo
+            var prestamo = new PrestamoRequest
             {
                 LibroIsbn = prestamoRequest.LibroIsbn,
                 UsuarioId = prestamoRequest.UsuarioId,
                 FechaPrestamo = prestamoRequest.FechaPrestamo,
-                FechaDevolucion = prestamoRequest.FechaDevolucion,
-                Estado = "Activo"
+                FechaDevolucion = prestamoRequest.FechaDevolucion
             };
 
             // Actualizar estado del libro
             libro.Estado = "Prestado";
 
-            _context.Prestamos.Add(prestamo);
+            _context.PrestamosRequest.Add(prestamo);
             await _context.SaveChangesAsync();
 
             return prestamo;
         }
 
+        /*
         public async Task<Prestamo?> RegistrarDevolucionAsync(int prestamoId)
         {
             var prestamo = await _context.Prestamos
@@ -185,5 +180,7 @@ namespace API_Biblioteca.Services
             await _context.SaveChangesAsync();
             return prestamo;
         }
+
+        */
     }
 }

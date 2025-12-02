@@ -10,12 +10,11 @@ namespace API_Biblioteca.Controllers
     public class PrestamosController : ControllerBase
     {
         private readonly IBibliotecaService _bibliotecaService;
-
         public PrestamosController(IBibliotecaService bibliotecaService)
         {
             _bibliotecaService = bibliotecaService;
         }
-
+        
         [HttpGet]
         public async Task<ActionResult<List<Prestamo>>> GetPrestamos()
         {
@@ -33,7 +32,6 @@ namespace API_Biblioteca.Controllers
             }
             return Ok(prestamo);
         }
-
         [HttpPost]
         public async Task<ActionResult<Prestamo>> CreatePrestamo(PrestamoRequest prestamoRequest)
         {
@@ -47,7 +45,7 @@ namespace API_Biblioteca.Controllers
                 return BadRequest($"Error al crear préstamo: {ex.Message}");
             }
         }
-
+        /*
         [HttpPut("{id}/devolver")]
         public async Task<ActionResult<Prestamo>> RegistrarDevolucion(int id)
         {
@@ -58,6 +56,6 @@ namespace API_Biblioteca.Controllers
             }
 
             return Ok(prestamo);
-        }
+        } */
     }
 }
