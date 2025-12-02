@@ -59,44 +59,5 @@ namespace API_Biblioteca.Controllers
 
             return Ok(prestamo);
         }
-
-        [HttpGet("socios")]
-        public async Task<ActionResult<List<Usuario>>> GetSocios()
-        {
-            var socios = await _bibliotecaService.GetSociosAsync();
-            return Ok(socios);
-        }
-
-        [HttpPost("socios")]
-        public async Task<ActionResult<Usuario>> CreateSocio(Usuario socio)
-        {
-            try
-            {
-                var nuevoSocio = await _bibliotecaService.CreateSocioAsync(socio);
-                return CreatedAtAction(nameof(GetSocios), new { }, nuevoSocio);
-            }
-            catch (Exception ex)
-            {
-                return BadRequest($"Error al crear socio: {ex.Message}");
-            }
-        }
-
-        [HttpGet("socios/buscar/{criterio}")]
-        public async Task<ActionResult<List<Usuario>>> BuscarSocios(string criterio)
-        {
-            var socios = await _bibliotecaService.BuscarSociosAsync(criterio);
-            return Ok(socios);
-        }
-
-        [HttpGet("socios/{id}")]
-        public async Task<ActionResult<Usuario>> GetSocio(int id)
-        {
-            var socio = await _bibliotecaService.GetSocioByIdAsync(id);
-            if (socio == null)
-            {
-                return NotFound($"Socio con ID {id} no encontrado");
-            }
-            return Ok(socio);
-        }
     }
 }

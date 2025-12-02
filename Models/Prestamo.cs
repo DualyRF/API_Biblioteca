@@ -11,7 +11,7 @@ namespace API_Biblioteca.Models
 
         [Required]
         [Column ("libroIsbn")]
-        public string LibroIsbn { get; set; } = string.Empty;
+        public string? LibroIsbn { get; set; }
 
         [Required]
         [Column ("usuarioId")]

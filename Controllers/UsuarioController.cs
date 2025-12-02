@@ -72,7 +72,6 @@ namespace API_Biblioteca.Controllers
             {
                 return NotFound($"Empleado con ID {id} no encontrado");
             }
-
             return Ok(empleadoActualizado);
         }
 

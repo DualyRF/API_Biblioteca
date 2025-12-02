@@ -19,19 +19,10 @@ namespace API_Biblioteca.Interfaces
         Task<Usuario?> UpdateUsuarioAsync(int id, Usuario empleado);
         Task<bool> DeleteEmpleadoAsync(int id);
 
-        // Socios
-        Task<List<Usuario>> GetSociosAsync();
-        Task<Usuario?> GetSocioByIdAsync(int id);
-        Task<Usuario> CreateSocioAsync(Usuario socio);
-
         // Préstamos
         Task<List<Prestamo>> GetPrestamosAsync();
         Task<Prestamo?> GetPrestamoByIdAsync(int id);
         Task<Prestamo> CreatePrestamoAsync(PrestamoRequest prestamoRequest);
         Task<Prestamo?> RegistrarDevolucionAsync(int prestamoId);
-
-        // Búsquedas a la BD
-        Task<List<Libro>> BuscarLibrosAsync(string criterio);
-        Task<List<Usuario>> BuscarSociosAsync(string criterio);
     }
 }

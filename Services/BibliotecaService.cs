@@ -15,7 +15,7 @@ namespace API_Biblioteca.Services
             _context = context;
         }
 
-        // ========== LIBROS ==========
+        // ========== Libros ==========
         public async Task<List<Libro>> GetLibrosAsync()
         {
             return await _context.Libros
@@ -62,7 +62,7 @@ namespace API_Biblioteca.Services
             return true;
         }
 
-        // ========== EMPLEADOS ==========
+        // ========== Usuarios ==========
         public async Task<List<Usuario>> GetUsuariosAsync()
         {
             return await _context.Usuarios
@@ -76,32 +76,33 @@ namespace API_Biblioteca.Services
                 .FirstOrDefaultAsync(u => u.Id == id);
         }
 
-        public async Task<Usuario> CreateUsuarioAsync(Usuario empleado)
+        public async Task<Usuario> CreateUsuarioAsync(Usuario usuario)
         {
-            _context.Usuarios.Add(empleado);
+            _context.Usuarios.Add(usuario);
             await _context.SaveChangesAsync();
-            return empleado;
+            return usuario;
         }
 
-        public async Task<Usuario?> UpdateUsuarioAsync(int id, Usuario empleado)
+        public async Task<Usuario?> UpdateUsuarioAsync(int id, Usuario usuario)
         {
-            var empleadoExistente = await _context.Usuarios.FindAsync(id);
-            if (empleadoExistente == null)
+            var usuarioExistente = await _context.Usuarios.FirstOrDefaultAsync(u => u.Id == id);
+            if (usuarioExistente == null)
                 return null;
 
-            empleadoExistente.Username = empleado.Username;
-            empleadoExistente.Password = empleado.Password;
-            empleadoExistente.Nombre = empleado.Nombre;
-            empleadoExistente.Apellido = empleado.Apellido;
-            empleadoExistente.Email = empleado.Email;
-            empleadoExistente.Telefono = empleado.Telefono;
-            empleadoExistente.Tipo = empleado.Tipo;
-            empleadoExistente.Activo = empleado.Activo;
-
-
+            usuarioExistente.Username = usuario.Username;
+            usuarioExistente.Password = usuario.Password;
+            usuarioExistente.Nombre = usuario.Nombre;
+            usuarioExistente.Apellido = usuario.Apellido;
+            usuarioExistente.Tipo = usuario.Tipo;
+            usuarioExistente.CURP = usuario.CURP;
+            usuarioExistente.Email = usuario.Email;
+            usuarioExistente.Telefono = usuario.Telefono;
+            usuarioExistente.Activo = usuario.Activo;
+            _context.Usuarios.Update(usuarioExistente);
             await _context.SaveChangesAsync();
-            return empleadoExistente;
+            return usuarioExistente;
         }
+        
         public async Task<bool> DeleteEmpleadoAsync(int id)
         {
             var usuario = await _context.Usuarios.FindAsync(id);
@@ -112,32 +113,7 @@ namespace API_Biblioteca.Services
             return true;
         }
 
-        // ========== SOCIOS ==========
-        public async Task<List<Usuario>> GetSociosAsync()
-        {
-            return await _context.Usuarios
-                .Where(u => u.Tipo == "Socio" && u.Activo == 1)
-                .OrderBy(u => u.Nombre)
-                .ToListAsync();
-        }
-
-        public async Task<Usuario?> GetSocioByIdAsync(int id)
-        {
-            return await _context.Usuarios
-                .FirstOrDefaultAsync(u => u.Id == id && u.Tipo == "Socio" && u.Activo == 1);
-        }
-
-        public async Task<Usuario> CreateSocioAsync(Usuario socio)
-        {
-            socio.Tipo = "Socio";
-            socio.Activo = 1;
-
-            _context.Usuarios.Add(socio);
-            await _context.SaveChangesAsync();
-            return socio;
-        }
-
-        // ========== PRÉSTAMOS ==========
+        // ========== Prestamo ==========
         public async Task<List<Prestamo>> GetPrestamosAsync()
         {
             return await _context.Prestamos
@@ -208,28 +184,6 @@ namespace API_Biblioteca.Services
 
             await _context.SaveChangesAsync();
             return prestamo;
-        }
-
-        // Busquedas
-        public async Task<List<Libro>> BuscarLibrosAsync(string criterio)
-        {
-            return await _context.Libros
-                .Where(l => l.Titulo.Contains(criterio) ||
-                           l.Autor.Contains(criterio) ||
-                           l.Isbn.Contains(criterio))
-                .OrderBy(l => l.Titulo)
-                .ToListAsync();
-        }
-
-        public async Task<List<Usuario>> BuscarSociosAsync(string criterio)
-        {
-            return await _context.Usuarios
-                .Where(u => u.Tipo == "Socio" && u.Activo == 1 &&
-                           (u.Nombre.Contains(criterio) ||
-                            u.Apellido.Contains(criterio) ||
-                            u.CURP.Contains(criterio)))
-                .OrderBy(u => u.Nombre)
-                .ToListAsync();
         }
     }
 }

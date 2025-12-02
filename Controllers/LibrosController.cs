@@ -75,12 +75,5 @@ namespace API_Biblioteca.Controllers
 
             return NoContent();
         }
-
-        [HttpGet("buscar/{criterio}")]
-        public async Task<ActionResult<List<Libro>>> BuscarLibros(string criterio)
-        {
-            var libros = await _bibliotecaService.BuscarLibrosAsync(criterio);
-            return Ok(libros);
-        }
     }
 }

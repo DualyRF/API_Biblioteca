@@ -8,17 +8,17 @@ namespace API_Biblioteca.Models
         [Key]
         [Column ("isbn")]
         [StringLength (20)]
-        public string Isbn { get; set; } = string.Empty;
+        public string? Isbn { get; set; }
 
         [Required]
         [Column ("titulo")]
         [StringLength(200)]
-        public string Titulo { get; set; } = string.Empty;
+        public string? Titulo { get; set; }
 
         [Required]
         [Column ("autor")]
         [StringLength(100)]
-        public string Autor { get; set; } = string.Empty;
+        public string? Autor { get; set; }
 
         [Column ("editorial")]
         [StringLength(100)]
@@ -29,7 +29,7 @@ namespace API_Biblioteca.Models
 
         [Column ("genero")]
         [StringLength(50)]
-        public string Genero { get; set; } = string.Empty;
+        public string? Genero { get; set; }
 
         [Required]
         [Column ("estado")]
