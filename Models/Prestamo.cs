@@ -11,7 +11,7 @@ namespace API_Biblioteca.Models
 
         [Required]
         [Column ("libroIsbn")]
-        public string? LibroIsbn { get; set; }
+        public string LibroIsbn { get; set; }
 
         [Required]
         [Column ("usuarioId")]
@@ -32,10 +32,7 @@ namespace API_Biblioteca.Models
         [Column ("estado")]
         public string Estado { get; set; } = "Activo"; // Por defecto es Activo
 
-        [ForeignKey("libroIsbn")]
-        public virtual Libro Libro { get; set; } = null!;
-
-        [ForeignKey("usuarioId")]
-        public virtual Usuario Usuario { get; set; } = null!;
+        [Column("fechaRegistro")]
+        public DateTime? FechaRegistro { get; set; }
     }
 }

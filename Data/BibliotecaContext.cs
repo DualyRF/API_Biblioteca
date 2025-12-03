@@ -10,7 +10,6 @@ namespace API_Biblioteca.Data
 
         public DbSet<Usuario> Usuarios { get; set; }
         public DbSet<Libro> Libros { get; set; }
-        public DbSet<PrestamoRequest> Prestamos { get; set; }
         public DbSet<Prestamo> Prestamo { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -24,6 +23,34 @@ namespace API_Biblioteca.Data
                 entity.HasIndex(u => u.Activo);
                 entity.HasIndex(u => u.Email).IsUnique();
             });
+
+            modelBuilder.Entity<Prestamo>(entity =>
+            {
+                entity.HasIndex(p => p.Estado);
+                entity.HasIndex(p => new { p.FechaPrestamo, p.FechaDevolucion });
+                entity.HasIndex(p => p.LibroIsbn);
+                entity.HasIndex(p => p.UsuarioId);
+
+                entity.Property(p => p.FechaPrestamo)
+                    .IsRequired()
+                    .HasColumnType("datetime");
+
+                entity.Property(p => p.FechaDevolucion)
+                    .IsRequired()
+                    .HasColumnType("datetime");
+
+                entity.Property(p => p.FechaDevolucionReal)
+                    .HasColumnType("datetime");
+
+                entity.Property(p => p.FechaRegistro)
+                    .HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+                entity.Property(p => p.Estado)
+                    .IsRequired()
+                    .HasMaxLength(30)
+                    .HasDefaultValue("Activo");
+            });
+
 
         }
     }

@@ -22,7 +22,8 @@ namespace API_Biblioteca.Interfaces
         // Préstamos
         Task<List<Prestamo>> GetPrestamosAsync();
         Task<Prestamo?> GetPrestamoByIdAsync(int id);
-        Task<PrestamoRequest> CreatePrestamoAsync(PrestamoRequest prestamoRequest);
-        //Task<Prestamo?> RegistrarDevolucionAsync(int prestamoId);
+        Task<Prestamo> CreatePrestamoAsync(PrestamoRequest prestamoRequest);
+        Task<Prestamo?> UpdatePrestamoAsync(int id, Prestamo prestamo);
+        Task<bool> DeletePrestamoAsync(int id);
     }
 }

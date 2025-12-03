@@ -117,8 +117,6 @@ namespace API_Biblioteca.Services
         public async Task<List<Prestamo>> GetPrestamosAsync()
         {
             return await _context.Prestamo
-                .Include(p => p.Libro)
-                .Include(p => p.Usuario)
                 .OrderByDescending(p => p.FechaPrestamo)
                 .ToListAsync();
         }
@@ -127,60 +125,67 @@ namespace API_Biblioteca.Services
         public async Task<Prestamo?> GetPrestamoByIdAsync(int id)
         {
             return await _context.Prestamo
-                .Include(p => p.Libro)
-                .Include(p => p.Usuario)
                 .FirstOrDefaultAsync(p => p.Id == id);
         }
 
-        public async Task<PrestamoRequest> CreatePrestamoAsync(PrestamoRequest prestamoRequest)
+        public async Task<Prestamo> CreatePrestamoAsync(PrestamoRequest prestamoRequest)
         {
             // Verificar que el libro existe y está disponible
             var libro = await _context.Libros.FindAsync(prestamoRequest.LibroIsbn);
-            if (libro == null || libro.Estado != "Disponible")
-                throw new Exception("Libro no disponible");
+
+            if (libro == null)
+                throw new Exception($"Libro con ISBN {prestamoRequest.LibroIsbn} no encontrado");
+
+            if (libro.Estado != "Disponible")
+                throw new Exception($"El libro '{libro.Titulo}' no está disponible. Estado actual: {libro.Estado}");
 
             // Verificar que el socio existe
-            var socio = await _context.Usuarios
-                .FirstOrDefaultAsync(u => u.Id == prestamoRequest.UsuarioId && u.Tipo == "Socio" && u.Activo == 1);
-            if (socio == null)
-                throw new Exception("Socio no válido");
+            var usuario = await _context.Usuarios
+        .FirstOrDefaultAsync(u => u.Id == prestamoRequest.UsuarioId);
+            if (usuario == null)
+                throw new Exception($"Usuario con ID {prestamoRequest.UsuarioId} no encontrado");
 
-            var prestamo = new PrestamoRequest
+
+
+            var prestamo = new Prestamo
             {
                 LibroIsbn = prestamoRequest.LibroIsbn,
                 UsuarioId = prestamoRequest.UsuarioId,
                 FechaPrestamo = prestamoRequest.FechaPrestamo,
-                FechaDevolucion = prestamoRequest.FechaDevolucion
+                FechaDevolucion = prestamoRequest.FechaDevolucion,
+                Estado = "Activo",
+
             };
 
             // Actualizar estado del libro
             libro.Estado = "Prestado";
 
-            _context.PrestamosRequest.Add(prestamo);
+            _context.Prestamo.Add(prestamo);
             await _context.SaveChangesAsync();
 
             return prestamo;
         }
-
-        /*
-        public async Task<Prestamo?> RegistrarDevolucionAsync(int prestamoId)
+        public async Task<Prestamo?> UpdatePrestamoAsync(int id, Prestamo prestamo)
         {
-            var prestamo = await _context.Prestamos
-                .Include(p => p.Libro)
-                .FirstOrDefaultAsync(p => p.Id == prestamoId && p.Estado == "Activo");
-
-            if (prestamo == null) return null;
-
-            prestamo.Estado = "Completado";
-            prestamo.FechaDevolucionReal = DateTime.UtcNow;
-
-            // Liberar el libro
-            prestamo.Libro.Estado = "Disponible";
-
+            var prestamoExistente = await _context.Prestamo.FindAsync(id);
+            if (prestamoExistente == null) return null;
+            prestamoExistente.LibroIsbn = prestamo.LibroIsbn;
+            prestamoExistente.UsuarioId = prestamo.UsuarioId;
+            prestamoExistente.FechaPrestamo = prestamo.FechaPrestamo;
+            prestamoExistente.FechaDevolucion = prestamo.FechaDevolucion;
+            prestamoExistente.FechaDevolucionReal = prestamo.FechaDevolucionReal;
+            prestamoExistente.Estado = prestamo.Estado;
             await _context.SaveChangesAsync();
-            return prestamo;
+            return prestamoExistente;
         }
 
-        */
+        public async Task<bool> DeletePrestamoAsync(int id)
+        {
+            var prestamo = await _context.Prestamo.FindAsync(id);
+            if (prestamo == null) return false;
+            _context.Prestamo.Remove(prestamo);
+            await _context.SaveChangesAsync();
+            return true;
+        }
     }
 }
